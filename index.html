@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Joke Generator</title>
+    <link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" href="skeleton.css">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+
+        .container input {
+            padding-left: 38px;
+            width: 250px;
+        }
+
+        body {
+            background: #555;
+            position: relative;
+
+
+
+        }
+
+        h2 {
+            color: #eee;
+
+            border-radius: 10px;
+            margin-top: 10px;
+            padding: 5px 10px;
+            background: #3498DB;
+
+        }
+
+        h2,
+        h4,
+        h5 {
+
+            font-family: Segoe Print;
+        }
+
+        .item {
+            border-radius: 10px;
+            width: 300px;
+            background: #fefefe;
+            padding: 20px;
+            text-align: center;
+            margin: 10px 10px;
+        }
+
+        .item h4 {
+            color: #777;
+        }
+
+        #results {
+            display: flex;
+            flex-wrap: wrap;
+            /* width: 95%; */
+            margin: -10px 0px;
+            justify-content: space-evenly;
+            padding-bottom: 25px;
+        }
+
+        .btn {
+            background-color: #3498DB;
+            color: #fff;
+        }
+
+        footer {
+            background-color: #3498DB;
+            color: #efefef;
+            font-weight: 900;
+            text-align: center;
+            font-family: Segoe Print;
+            font-size: 1.6rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Random Jokes</h2>
+        <input type="number" id="input" placeholder="Enter the number of jokes" autofocus>
+        <button class="btn" onclick="generateJokes()">Generate</button>
+
+    </div>
+    <div class="output">
+
+        <div id="results">
+
+        </div>
+    </div>
+    <footer>Developed By Minhajuddin</footer>
+
+</body>
+
+<script>
+    function generateJokes() {
+        let resultsDiv = document.getElementById("results");
+
+        resultsDiv.remove();
+        let newDiv = document.createElement("div");
+        newDiv.setAttribute("id", "results");
+        document.body.appendChild(newDiv);
+
+        let n = document.getElementById("input").value;
+        if (n <= 0) {
+            alert("Input must be greater than zero");
+        }
+
+        for (let i = 0; i < n; i++) {
+            let result = getJokes();
+
+
+            let div = document.createElement('div');
+            div.setAttribute('class', 'item');
+
+            div.innerHTML = `
+                <h4>${result.setup}</h4>
+                <h5>${result.punchline}</h5>
+                `;
+            div.addEventListener('click', deleteJoke)
+            document.getElementById("results").appendChild(div);
+
+        }
+        // let promises = [];
+        // promises.push(getJokes());
+        // Promise.all(promises)
+        //     .then(results => {
+        //         results.forEach(result => {
+        //             let div = document.createElement("div");
+        //             div.setAttribute("class", "item");
+        //         });
+        //     })
+        //     .catch(err => document.getElementById('results').innerHTML = err);
+    }
+
+    function getJokes() {
+        // let response = await fetch('https://official-joke-api.appspot.com/jokes/general/random');
+        // let data = await response.json();
+
+        let data = []
+        let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                data = JSON.parse(this.responseText);
+            }
+        };
+        xhr.open('GET', 'https://official-joke-api.appspot.com/jokes/general/random', false);
+        xhr.send();
+        return {
+            setup: data[0].setup,
+            punchline: data[0].punchline
+        }
+
+    }
+    function deleteJoke(evt) {
+        if (evt.target.className == 'item')
+            evt.target.remove();
+        else evt.target.parentElement.remove()
+
+    }
+</script>
+
+
+</html>
